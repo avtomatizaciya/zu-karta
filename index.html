@@ -75,7 +75,7 @@ function histBlock(e){
  return h+'</ul>'}
 const map=L.map('map').setView([57.60,39.86],12);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-const polys={};
+const polys={};const gmarks=[];
 function popupFor(e){
  const w=document.createElement('div');w.className='pop';
  w.innerHTML='<b>'+esc(e.title)+'</b><div class="tabs"><button class="on" data-t="n">Сейчас</button><button data-t="h">История</button></div><div class="pn">'+nowBlock(e)+'</div><div class="ph" style="display:none">'+histBlock(e)+'</div>';
@@ -91,6 +91,9 @@ D.forEach((e)=>{
  (e.geo||[]).forEach(g=>{const gl=L.geoJSON(g.geometry,{style:{color:col[e.level],weight:2,fillColor:col[e.level],fillOpacity:.25}}).addTo(map);polys[g.kn]=gl;gl.bindPopup(()=>popupFor(e),{maxWidth:340})});
  const m=L.circleMarker([e.lat,e.lon],{radius:(e.ratio&&e.ratio>20)?11:8,color:'#fff',weight:2,fillColor:col[e.level],fillOpacity:.9}).addTo(map);
  m.bindPopup(()=>popupFor(e),{maxWidth:340});
- item.onclick=()=>{map.setView([e.lat,e.lon],15);m.openPopup()};
+ if((e.geo||[]).length)gmarks.push(m);
+ item.onclick=()=>{const g=(e.geo||[])[0];if(g&&polys[g.kn]){map.fitBounds(polys[g.kn].getBounds(),{maxZoom:17,padding:[60,60]})}else{map.setView([e.lat,e.lon],15)}m.openPopup()};
 });
+function syncMarks(){const z=map.getZoom();gmarks.forEach(m=>{if(z>=15){if(map.hasLayer(m))map.removeLayer(m)}else if(!map.hasLayer(m))m.addTo(map)})}
+map.on('zoomend',syncMarks);syncMarks();
 </script></body></html>
