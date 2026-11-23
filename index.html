@@ -21,7 +21,7 @@ details.essence summary{cursor:pointer;font-weight:600}
 .tl{list-style:none;margin:6px 0;padding:0;border-left:2px solid #ccc}.tl li{margin:0 0 7px 0;padding-left:10px;font-size:13px;cursor:default}.tl li.k{cursor:pointer}.tl li:hover{background:#f6f6f6}
 .tl .d{color:#666;font-size:12px}
 .note{font-size:12px;color:#666;margin-top:8px}
-@media (max-width:700px){body{flex-direction:column-reverse}#side{width:100%;max-width:none;height:46vh;border-right:0;border-top:1px solid var(--line)}#map{height:54vh}.pop{width:260px}}
+@media (max-width:700px){body{flex-direction:column-reverse}#side{width:100%;max-width:none;height:46vh;border-right:0;border-top:1px solid var(--line)}#map{height:54vh}.pop{width:260px}.pop .pn,.pop .ph{max-height:30vh;overflow-y:auto}.leaflet-popup-content{margin:10px 12px}}
 </style></head><body>
 <div id="side"><h1>Земельные схемы Ярославля</h1>
 <div class="sub">Большой участок отдают или продают под маленькое здание, а потом делят и перепродают. Здесь собраны случаи по документам ведомств, публикациям СМИ и постам группы. Нажмите точку или строку: «Сейчас» показывает данные кадастра, «История» - как менялся участок, ходы схемы подсвечены цветом.</div>
@@ -88,9 +88,9 @@ D.forEach((e)=>{
  item.innerHTML='<h3>'+esc(e.title)+'</h3><div class="tag" style="color:'+col[e.level]+'">'+lab[e.level]+(e.ratio?' · в '+e.ratio+' раза':'')+'</div>';
  list.appendChild(item);
  if(e.lat==null)return;
- (e.geo||[]).forEach(g=>{const gl=L.geoJSON(g.geometry,{style:{color:col[e.level],weight:2,fillColor:col[e.level],fillOpacity:.25}}).addTo(map);polys[g.kn]=gl;gl.bindPopup(()=>popupFor(e),{maxWidth:340})});
+ (e.geo||[]).forEach(g=>{const gl=L.geoJSON(g.geometry,{style:{color:col[e.level],weight:2,fillColor:col[e.level],fillOpacity:.25}}).addTo(map);polys[g.kn]=gl;gl.bindPopup(()=>popupFor(e),{maxWidth:340,autoPanPadding:[10,10]})});
  const m=L.circleMarker([e.lat,e.lon],{radius:(e.ratio&&e.ratio>20)?11:8,color:'#fff',weight:2,fillColor:col[e.level],fillOpacity:.9}).addTo(map);
- m.bindPopup(()=>popupFor(e),{maxWidth:340});
+ m.bindPopup(()=>popupFor(e),{maxWidth:340,autoPanPadding:[10,10]});
  if((e.geo||[]).length)gmarks.push(m);
  item.onclick=()=>{const g=(e.geo||[])[0];if(g&&polys[g.kn]){map.fitBounds(polys[g.kn].getBounds(),{maxZoom:17,padding:[60,60]})}else{map.setView([e.lat,e.lon],15)}m.openPopup()};
 });
